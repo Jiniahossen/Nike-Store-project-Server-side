@@ -39,6 +39,8 @@ async function run() {
         const categoryCollection = client.db('myDB').collection('category');
         const userCollection = client.db('myDB').collection('users');
         const cartCollection = client.db('myDB').collection('cart');
+        const reviewCollection = client.db('myDB').collection('reviews');
+        const wishlistCollection = client.db('myDB').collection('wishlist');
 
 
 
@@ -126,7 +128,7 @@ async function run() {
                 const update = {
                     $set: {
                         quantity: quantity,
-                        totalPrice: newTotalPrice, // Update the total price
+                        totalPrice: newTotalPrice,
                     },
                 };
 
@@ -148,6 +150,40 @@ async function run() {
 
 
 
+        //post review
+
+        app.post('/reviews', async (req, res) => {
+            const item = req.body;
+            const result = await reviewCollection.insertOne(item);
+            res.send(result)
+        })
+
+        //get review by product ID
+
+        
+        app.get('/reviews', async (req, res) => {
+            const result = await reviewCollection.find().toArray();
+            res.send(result);
+
+        });
+
+
+
+        //post wishlist
+        app.post('/wishlist', async (req, res) => {
+            const item = req.body;
+            const result = await wishlistCollection.insertOne(item);
+            res.send(result)
+        })
+
+        //get wishlist data by email
+
+        app.get('/wishlist/:email', async (req, res) => {
+            const email = req.params.email;
+            const result = await wishlistCollection.find({ email: email }).toArray();
+            res.send(result);
+        });
+        
 
 
 
