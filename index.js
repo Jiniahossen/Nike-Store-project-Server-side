@@ -102,6 +102,48 @@ async function run() {
             }
         });
 
+        // ... (Other imports and configurations)
+
+        // Update quantity in cart
+        app.put('/cart/:id', async (req, res) => {
+            try {
+                const id = req.params.id;
+                const { quantity } = req.body;
+
+                // Validate quantity
+                if (typeof quantity !== 'number' || quantity <= 0) {
+                    return res.status(400).send({ success: false, message: 'Invalid quantity value' });
+                }
+
+                const query = { _id: new ObjectId(id) };
+
+                // Fetch the current cart item
+                const currentItem = await cartCollection.findOne(query);
+
+                // Calculate the new total price based on the updated quantity
+                const newTotalPrice = currentItem.price * quantity;
+
+                const update = {
+                    $set: {
+                        quantity: quantity,
+                        totalPrice: newTotalPrice, // Update the total price
+                    },
+                };
+
+                const result = await cartCollection.updateOne(query, update);
+
+                if (result.matchedCount > 0) {
+                    res.send({ success: true, message: 'Item quantity updated successfully' });
+                } else {
+                    res.status(404).send({ success: false, message: 'Item not found' });
+                }
+            } catch (error) {
+
+                res.status(500).send({ success: false, message: 'Failed to update item quantity' });
+            }
+        });
+
+
 
 
 
