@@ -67,6 +67,11 @@ async function run() {
             res.send(result)
         })
 
+        app.get('/users', async (req, res) => {
+            const result = await userCollection.find().toArray();
+            res.send(result)
+        })
+
 
         //my cart
         app.post('/cart', async (req, res) => {
@@ -104,7 +109,7 @@ async function run() {
             }
         });
 
-        // ... (Other imports and configurations)
+
 
         // Update quantity in cart
         app.put('/cart/:id', async (req, res) => {
@@ -160,7 +165,7 @@ async function run() {
 
         //get review by product ID
 
-        
+
         app.get('/reviews', async (req, res) => {
             const result = await reviewCollection.find().toArray();
             res.send(result);
@@ -183,8 +188,20 @@ async function run() {
             const result = await wishlistCollection.find({ email: email }).toArray();
             res.send(result);
         });
-        
 
+        //delete wishlist
+        app.delete('/wishlist/:id', async (req, res) => {
+            try {
+                const id = req.params.id;
+                const query = { _id: new ObjectId(id) }
+                const result = await wishlistCollection.deleteOne(query);
+                console.log(result);  // Log the result to see if it's successful
+                res.send({ success: true, message: 'Item deleted successfully' });
+            } catch (error) {
+                console.error('Error deleting item:', error);
+                res.status(500).send({ success: false, message: 'Failed to delete item' });
+            }
+        });
 
 
 
